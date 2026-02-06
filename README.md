@@ -1,8 +1,12 @@
 # 📥 .NET Remote Installer & Server Patching
 
-**PowerShell automation for remote .NET Framework deployment and Windows Server patching — no external modules required.**
-![Version](https://img.shields.io/badge/version-1.0-00d4ff)
-![Status](https://img.shields.io/badge/status-Active-008000)
+### PowerShell automation for remote .NET Framework deployment and Windows Server patching — no external modules required.
+
+[![GitHub Stars](https://img.shields.io/github/stars/CheswickDEV/.net-Remote-Installer?color=00d4ff&labelColor=16161f)](https://github.com/CheswickDEV/.net-Remote-Installer)
+[![Last Commit](https://img.shields.io/github/last-commit/CheswickDEV/.net-Remote-Installer?color=a855f7&labelColor=16161f)](https://github.com/CheswickDEV/.net-Remote-Installer/commits/main)
+![Version](https://img.shields.io/badge/version-1.0-00d4ff?labelColor=16161f)
+![Status](https://img.shields.io/badge/status-Active-00d4ff?labelColor=16161f)
+![License](https://img.shields.io/badge/license-Unlicensed-6c757d?labelColor=16161f)
 ![PowerShell](https://img.shields.io/badge/PowerShell-5.1+-a855f7?logo=powershell&logoColor=white&labelColor=16161f)
 
 ---
@@ -18,6 +22,8 @@ This repository contains two PowerShell scripts for enterprise server management
 - [Script 1: .NET Framework 4.8 Installer](#-script-1-net-framework-48-installer)
 - [Script 2: Windows Server Patching](#-script-2-windows-server-patching)
 - [Prerequisites](#-prerequisites)
+- [Tech Stack](#️-tech-stack)
+- [Changelog](#-changelog)
 - [License](#-license)
 
 ---
@@ -28,11 +34,15 @@ This repository contains two PowerShell scripts for enterprise server management
 
 ### Features
 
-- **Pre-flight check** — Skips installation if .NET Framework 4.8 (Release Key ≥ 528040) is already present
-- **Admin validation** — Verifies the PowerShell session runs with administrator privileges
-- **Quiet mode** — Runs the installer with `/q /norestart` flags
-- **Post-install verification** — Validates the installed .NET version after completion
-- **Smart exit codes** — Treats both `0` (success) and `3010` (reboot required) as successful, logs the reboot requirement but does **not** auto-restart
+- **✈️ Pre-flight Check** — Skips installation if .NET Framework 4.8 (Release Key ≥ 528040) is already present.
+
+- **🔐 Admin Validation** — Verifies the PowerShell session runs with administrator privileges.
+
+- **🤫 Quiet Mode** — Runs the installer with `/q /norestart` flags.
+
+- **✅ Post-install Verification** — Validates the installed .NET version after completion.
+
+- **📊 Smart Exit Codes** — Treats both `0` (success) and `3010` (reboot required) as successful, logs the reboot requirement but does **not** auto-restart.
 
 ### Usage
 
@@ -60,12 +70,17 @@ This repository contains two PowerShell scripts for enterprise server management
 
 ### Features
 
-- **No external modules** — Uses the Windows Update Agent COM API via a temporary scheduled task running as SYSTEM. No `PSWindowsUpdate`, no third-party dependencies
-- **Multi-server support** — Patches a list of servers in sequence from one management machine
-- **Before/after comparison** — Reports OS version and build number before and after patching
-- **Smart reboot handling** — Reboots servers when required and waits for them to come back online
-- **Live terminal output** — Real-time progress reporting during execution
-- **CSV export** — Generates a report file in the current directory after completion
+- **🔌 No External Modules** — Uses the Windows Update Agent COM API via a temporary scheduled task running as SYSTEM. No `PSWindowsUpdate`, no third-party dependencies.
+
+- **🖥️ Multi-server Support** — Patches a list of servers in sequence from one management machine.
+
+- **📋 Before/After Comparison** — Reports OS version and build number before and after patching.
+
+- **🔄 Smart Reboot Handling** — Reboots servers when required and waits for them to come back online.
+
+- **📺 Live Terminal Output** — Real-time progress reporting during execution.
+
+- **📄 CSV Export** — Generates a report file in the current directory after completion.
 
 ### Usage
 
@@ -105,8 +120,8 @@ $servers = "APP01", "DB01", "WEB03"
 
 ## 🛠️ Tech Stack
 
-![PowerShell](https://img.shields.io/badge/PowerShell-16161f?style=flat-square&logo=powershell&logoColor=00d4ff)
-![Windows Server](https://img.shields.io/badge/Windows_Server-16161f?style=flat-square&logo=windows&logoColor=00d4ff)
+![PowerShell](https://img.shields.io/badge/PowerShell-16161f?logo=powershell&logoColor=00d4ff)
+![Windows Server](https://img.shields.io/badge/Windows_Server-16161f?logo=windows&logoColor=00d4ff)
 
 ```
 .net-Remote-Installer/
@@ -114,6 +129,16 @@ $servers = "APP01", "DB01", "WEB03"
 ├── Patch-WindowsServers.ps1     # Remote patching automation
 └── README.md
 ```
+
+---
+
+## 📝 Changelog
+
+### v1.0 (current)
+- 🚀 Initial release
+- ✨ .NET Framework 4.8 remote installer with pre-flight checks
+- ✨ Windows Server patching via Windows Update Agent API
+- ✨ CSV report export
 
 ---
 
@@ -125,7 +150,7 @@ Unlicensed — provided as-is for enterprise use.
 
 <p align="center">
   <a href="https://cheswick.dev">
-    <img src="https://img.shields.io/badge/CHESWICK.DEV-00d4ff?style=for-the-badge&logo=firefox&logoColor=0a0a0f&labelColor=a855f7" alt="cheswick.dev" />
+    <img src="https://img.shields.io/badge/CHESWICK.DEV-00d4ff?logo=firefox&logoColor=0a0a0f&labelColor=a855f7" alt="cheswick.dev" />
   </a>
 </p>
 
