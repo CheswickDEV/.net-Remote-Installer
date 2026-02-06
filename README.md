@@ -1,10 +1,9 @@
 # 📥 .NET Remote Installer & Server Patching
 
 **PowerShell automation for remote .NET Framework deployment and Windows Server patching — no external modules required.**
-
-![Version](https://img.shields.io/badge/version-1.0-00d4ff?style=flat-square&labelColor=16161f)
-![Status](https://img.shields.io/badge/status-Active-00d4ff?style=flat-square&labelColor=16161f)
-![PowerShell](https://img.shields.io/badge/PowerShell-5.1+-a855f7?style=flat-square&logo=powershell&logoColor=white&labelColor=16161f)
+![Version](https://img.shields.io/badge/version-1.0-00d4ff)
+![Status](https://img.shields.io/badge/status-Active-008000)
+![PowerShell](https://img.shields.io/badge/PowerShell-5.1+-a855f7?logo=powershell&logoColor=white&labelColor=16161f)
 
 ---
 
