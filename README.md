@@ -1,61 +1,135 @@
-# Server-Patching
+# 📥 .NET Remote Installer & Server Patching
 
-Dieses Repository enthält Hilfsskripte für Server-Patching-Aufgaben. Verwenden Sie `install-dotnet48.ps1`, um die .NET Framework 4.8-Installation auf einem Windows-Server automatisiert auszuführen.
+**PowerShell automation for remote .NET Framework deployment and Windows Server patching — no external modules required.**
 
-## .NET Framework 4.8 per PowerShell installieren
+![Version](https://img.shields.io/badge/version-1.0-00d4ff?style=flat-square&labelColor=16161f)
+![Status](https://img.shields.io/badge/status-Active-00d4ff?style=flat-square&labelColor=16161f)
+![PowerShell](https://img.shields.io/badge/PowerShell-5.1+-a855f7?style=flat-square&logo=powershell&logoColor=white&labelColor=16161f)
 
-1. Öffnen Sie eine administrative PowerShell-Sitzung auf dem Zielserver.
-2. Laden Sie das Skript herunter oder kopieren Sie es auf den Server.
-3. Stellen Sie sicher, dass der Pfad zu Ihrer vorhandenen Offline-Installer-EXE (z. B. ein UNC-Pfad zu einem Share) bekannt ist.
-4. Führen Sie das Skript aus:
+---
 
-   ```powershell
-   .\install-dotnet48.ps1 -InstallerPath \\fileserver\pfad\zu\ndp48-x86-x64-allos-enu.exe
-   ```
+## 💡 What It Does
 
-   Das Skript erwartet einen vorhandenen Offline-Installer (kein Download). Es führt ihn im Quiet-Mode aus (`/q /norestart`) und schreibt ein Log nach `%TEMP%\dotnet48-install.log`.
+This repository contains two PowerShell scripts for enterprise server management. Both are designed to run from a central management server against multiple remote targets — no agents, no external modules, no internet required.
 
-### Optionale Parameter
+---
 
-- `-InstallerPath <Pfad>` (erforderlich): Pfad zu einer vorhandenen Offline-Installer-EXE, z. B. von einem Netzwerk-Share.
-- `-LogPath <Pfad>`: Ändert den Speicherort des Installationslogs.
+## 📋 Table of Contents
 
-### Ablauf des Skripts
+- [Script 1: .NET Framework 4.8 Installer](#-script-1-net-framework-48-installer)
+- [Script 2: Windows Server Patching](#-script-2-windows-server-patching)
+- [Prerequisites](#-prerequisites)
+- [License](#-license)
 
-- Prüft, ob die PowerShell-Sitzung mit Administratorrechten läuft.
-- Überspringt die Installation, wenn .NET Framework 4.8 (Release-Key ≥ 528040) bereits vorhanden ist.
-- Führt den bereitgestellten Offline-Installer mit `Start-Process -Wait` aus.
-- Behandelt die Rückgabecodes `0` (erfolgreich) und `3010` (Neustart erforderlich) als erfolgreiche Installation, vermerkt den erforderlichen Neustart im Log, führt ihn jedoch **nicht** durch.
-- Validiert nach Abschluss erneut die installierte .NET-Version.
-Dieses Repository stellt ein PowerShell-Skript bereit, das Windows Server in einer Domäne automatisiert patcht.
+---
 
-## Skript: `Patch-WindowsServers.ps1`
+## ⚡ Script 1: .NET Framework 4.8 Installer
 
-### Funktionsumfang
-- Anstoßen des Patchings mehrerer Server von einem zentralen System aus
-- Automatisches Ermitteln und Installieren der aktuell lokal/verfügbaren Windows-Updates (inkl. kumulativer KBs)
-- Nutzung der integrierten Windows Update Agent API über einen temporären SYSTEM-Scheduled-Task (kein externes PowerShell-Modul erforderlich)
-- Neustartkontrolle mit Rückmeldung, ob Server nach dem Patchen wieder online sind
-- Vorher/Nachher-Vergleich von OS-Version und Build
-- Direktes Live-Reporting im Terminal sowie Export als CSV-Report
-- Entspricht funktional dem manuellen Klick auf „Check for updates“ bzw. „Install now“ in den Windows-Update-Einstellungen
+`install-dotnet48.ps1` — Automates .NET Framework 4.8 installation on remote Windows Servers using an existing offline installer.
 
-### Voraussetzungen
-- PowerShell 5.1 (oder neuer) auf dem Management-Server
-- Aktiviertes PowerShell Remoting (WinRM) auf allen Zielsystemen
-- Domain- oder lokales Konto mit Administratorrechten auf den Zielservern
-- Kein Internetzugriff notwendig – Updates können vorab über WSUS oder manuell auf die Zielsysteme gebracht werden
-- Die Zielserver müssen das Anlegen und Ausführen geplanter Aufgaben (Aufgabenplanung) erlauben; das Skript erstellt temporär einen Task unter `C:\ProgramData\Remote-Patching`
-- Unterstützte Zielsysteme: Windows Server 2016, 2019 und 2022
+### Features
 
-### Beispielaufruf
+- **Pre-flight check** — Skips installation if .NET Framework 4.8 (Release Key ≥ 528040) is already present
+- **Admin validation** — Verifies the PowerShell session runs with administrator privileges
+- **Quiet mode** — Runs the installer with `/q /norestart` flags
+- **Post-install verification** — Validates the installed .NET version after completion
+- **Smart exit codes** — Treats both `0` (success) and `3010` (reboot required) as successful, logs the reboot requirement but does **not** auto-restart
+
+### Usage
+
 ```powershell
-# Liste der zu patchenden Server definieren
-$servers = "APP01","DB01"
+# Basic usage — point to your offline installer on a network share
+.\install-dotnet48.ps1 -InstallerPath "\\fileserver\share\ndp48-x86-x64-allos-enu.exe"
 
-# Skript mit administrativen Rechten ausführen
-.
-\Patch-WindowsServers.ps1 -Servers $servers
+# Custom log path
+.\install-dotnet48.ps1 -InstallerPath "\\fileserver\share\ndp48-x86-x64-allos-enu.exe" `
+                       -LogPath "D:\Logs\dotnet48.log"
 ```
 
-Nach der Ausführung befindet sich der Report als CSV-Datei im aktuellen Verzeichnis.
+### Parameters
+
+| Parameter | Required | Default | Description |
+|:----------|:--------:|:-------:|:------------|
+| `-InstallerPath` | ✅ | — | Path to the .NET 4.8 offline installer EXE (e.g. UNC path) |
+| `-LogPath` | ❌ | `%TEMP%\dotnet48-install.log` | Custom log file location |
+
+---
+
+## ⚡ Script 2: Windows Server Patching
+
+`Patch-WindowsServers.ps1` — Remotely patches multiple Windows Servers from a central system using the built-in Windows Update Agent API.
+
+### Features
+
+- **No external modules** — Uses the Windows Update Agent COM API via a temporary scheduled task running as SYSTEM. No `PSWindowsUpdate`, no third-party dependencies
+- **Multi-server support** — Patches a list of servers in sequence from one management machine
+- **Before/after comparison** — Reports OS version and build number before and after patching
+- **Smart reboot handling** — Reboots servers when required and waits for them to come back online
+- **Live terminal output** — Real-time progress reporting during execution
+- **CSV export** — Generates a report file in the current directory after completion
+
+### Usage
+
+```powershell
+# Define target servers
+$servers = "APP01", "DB01", "WEB03"
+
+# Run with admin privileges
+.\Patch-WindowsServers.ps1 -Servers $servers
+```
+
+### How It Works
+
+1. Connects to each server via PowerShell Remoting (WinRM)
+2. Creates a temporary scheduled task under `C:\ProgramData\Remote-Patching`
+3. The task runs as SYSTEM and calls the Windows Update Agent API to search and install updates
+4. Equivalent to clicking "Check for updates" → "Install now" in Windows Settings
+5. Reports results and cleans up the temporary task
+
+### Supported Targets
+
+- Windows Server 2016
+- Windows Server 2019
+- Windows Server 2022
+
+---
+
+## 📋 Prerequisites
+
+- PowerShell 5.1 or newer on the management server
+- PowerShell Remoting (WinRM) enabled on all target servers
+- Domain or local admin credentials for the target servers
+- No internet access required — updates can be pre-staged via WSUS or manual deployment
+- Task Scheduler must be available on target servers
+
+---
+
+## 🛠️ Tech Stack
+
+![PowerShell](https://img.shields.io/badge/PowerShell-16161f?style=flat-square&logo=powershell&logoColor=00d4ff)
+![Windows Server](https://img.shields.io/badge/Windows_Server-16161f?style=flat-square&logo=windows&logoColor=00d4ff)
+
+```
+.net-Remote-Installer/
+├── install-dotnet48.ps1         # .NET Framework 4.8 installer
+├── Patch-WindowsServers.ps1     # Remote patching automation
+└── README.md
+```
+
+---
+
+## 📄 License
+
+Unlicensed — provided as-is for enterprise use.
+
+---
+
+<p align="center">
+  <a href="https://cheswick.dev">
+    <img src="https://img.shields.io/badge/CHESWICK.DEV-00d4ff?style=for-the-badge&logo=firefox&logoColor=0a0a0f&labelColor=a855f7" alt="cheswick.dev" />
+  </a>
+</p>
+
+<p align="center">
+  Made with 🖤 by <a href="https://cheswick.dev">cheswick.dev</a>
+</p>
